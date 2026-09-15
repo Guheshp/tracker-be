@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 const {
   getReminders,
   getTodayReminders,
@@ -10,19 +10,19 @@ const {
   deleteReminder,
   snoozeReminder,
   completeReminder,
-  getReminderById
-} = require('../controllers/reminderController');
+  getReminderById,
+} = require("../controllers/reminderController");
 
 router.use(auth);
 
-router.get('/', getReminders);
-router.get('/today', getTodayReminders);
-router.get('/upcoming', getUpcomingReminders);
-router.get('/:id', getReminderById);
-router.post('/', createReminder);
-router.put('/:id', updateReminder);
-router.delete('/:id', deleteReminder);
-router.post('/:id/snooze', snoozeReminder);
-router.post('/:id/complete', completeReminder);
+router.get("/", getReminders);
+router.get("/today", getTodayReminders);
+router.get("/upcoming", getUpcomingReminders);
+router.get("/:id", getReminderById);
+router.post("/", createReminder);
+router.put("/:id", updateReminder);
+router.delete("/:id", deleteReminder);
+router.post("/:id/snooze", snoozeReminder);
+router.post("/:id/complete", completeReminder);
 
 module.exports = router;
