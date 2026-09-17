@@ -1,6 +1,6 @@
-﻿const Activity = require('../models/Activity');
-const DailyLog = require('../models/DailyLog');
-const { Op } = require('sequelize');
+﻿const Activity = require("../models/Activity");
+const DailyLog = require("../models/DailyLog");
+const { Op } = require("sequelize");
 
 // =====================
 // GET ACTIVITIES
@@ -10,15 +10,15 @@ exports.getActivities = async (req, res) => {
     const activities = await Activity.findAll({
       where: { userId: req.user.id },
       order: [
-        ['order', 'ASC'],
-        ['startTime', 'ASC'],
-        ['createdAt', 'ASC']
-      ]
+        ["order", "ASC"],
+        ["startTime", "ASC"],
+        ["createdAt", "ASC"],
+      ],
     });
     res.json({ success: true, activities });
   } catch (error) {
-    console.error('Get activities error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get activities error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -28,27 +28,99 @@ exports.getActivities = async (req, res) => {
 exports.getDefaultActivities = async (req, res) => {
   try {
     const defaultActivities = [
-      { name: 'Wake Up Early (Before 7 AM)', icon: '🌅', startTime: '06:00', endTime: '07:00', isDefault: true },
-      { name: 'Morning Exercise', icon: '🏋️', startTime: '07:00', endTime: '08:00', isDefault: true },
-      { name: 'Healthy Breakfast', icon: '🥗', startTime: '08:00', endTime: '09:00', isDefault: true },
-      { name: 'Morning Meditation', icon: '🧘', startTime: '09:00', endTime: '09:30', isDefault: true },
-      { name: 'Deep Work / Study', icon: '📚', startTime: '10:00', endTime: '12:00', isDefault: true },
-      { name: 'Lunch Break', icon: '🍽️', startTime: '12:00', endTime: '13:00', isDefault: true },
-      { name: 'Work / Projects', icon: '💼', startTime: '13:00', endTime: '15:00', isDefault: true },
-      { name: 'Afternoon Reading', icon: '📖', startTime: '15:00', endTime: '16:00', isDefault: true },
-      { name: 'Evening Exercise', icon: '🏃', startTime: '17:00', endTime: '18:00', isDefault: true },
-      { name: 'No Social Media', icon: '📱', startTime: '18:00', endTime: '20:00', isDefault: true },
-      { name: 'Dinner Time', icon: '🍲', startTime: '20:00', endTime: '21:00', isDefault: true },
-      { name: 'Sleep on Time', icon: '😴', startTime: '22:00', endTime: '23:00', isDefault: true },
+      {
+        name: "Wake Up Early (Before 7 AM)",
+        icon: "🌅",
+        startTime: "06:00",
+        endTime: "07:00",
+        isDefault: true,
+      },
+      {
+        name: "Morning Exercise",
+        icon: "🏋️",
+        startTime: "07:00",
+        endTime: "08:00",
+        isDefault: true,
+      },
+      {
+        name: "Healthy Breakfast",
+        icon: "🥗",
+        startTime: "08:00",
+        endTime: "09:00",
+        isDefault: true,
+      },
+      {
+        name: "Morning Meditation",
+        icon: "🧘",
+        startTime: "09:00",
+        endTime: "09:30",
+        isDefault: true,
+      },
+      {
+        name: "Deep Work / Study",
+        icon: "📚",
+        startTime: "10:00",
+        endTime: "12:00",
+        isDefault: true,
+      },
+      {
+        name: "Lunch Break",
+        icon: "🍽️",
+        startTime: "12:00",
+        endTime: "13:00",
+        isDefault: true,
+      },
+      {
+        name: "Work / Projects",
+        icon: "💼",
+        startTime: "13:00",
+        endTime: "15:00",
+        isDefault: true,
+      },
+      {
+        name: "Afternoon Reading",
+        icon: "📖",
+        startTime: "15:00",
+        endTime: "16:00",
+        isDefault: true,
+      },
+      {
+        name: "Evening Exercise",
+        icon: "🏃",
+        startTime: "17:00",
+        endTime: "18:00",
+        isDefault: true,
+      },
+      {
+        name: "No Social Media",
+        icon: "📱",
+        startTime: "18:00",
+        endTime: "20:00",
+        isDefault: true,
+      },
+      {
+        name: "Dinner Time",
+        icon: "🍲",
+        startTime: "20:00",
+        endTime: "21:00",
+        isDefault: true,
+      },
+      {
+        name: "Sleep on Time",
+        icon: "😴",
+        startTime: "22:00",
+        endTime: "23:00",
+        isDefault: true,
+      },
     ];
 
     res.json({
       success: true,
-      defaultActivities
+      defaultActivities,
     });
   } catch (error) {
-    console.error('Get default activities error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get default activities error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -58,34 +130,35 @@ exports.getDefaultActivities = async (req, res) => {
 exports.getTodayActivities = async (req, res) => {
   try {
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split("T")[0];
     const currentHour = today.getHours();
     const currentMinute = today.getMinutes();
 
     const activities = await Activity.findAll({
       where: { userId: req.user.id },
       order: [
-        ['order', 'ASC'],
-        ['startTime', 'ASC'],
-        ['createdAt', 'ASC']
-      ]
+        ["order", "ASC"],
+        ["startTime", "ASC"],
+        ["createdAt", "ASC"],
+      ],
     });
 
     const logs = await DailyLog.findAll({
       where: {
         userId: req.user.id,
-        date: todayStr
-      }
+        date: todayStr,
+      },
     });
 
-    const canComplete = currentHour < 23 || (currentHour === 23 && currentMinute < 59);
+    const canComplete =
+      currentHour < 23 || (currentHour === 23 && currentMinute < 59);
 
-    const activitiesWithStatus = activities.map(activity => {
-      const log = logs.find(l => l.activityId === activity.id);
+    const activitiesWithStatus = activities.map((activity) => {
+      const log = logs.find((l) => l.activityId === activity.id);
       return {
         ...activity.toJSON(),
         completed: log ? log.completed : false,
-        canComplete: canComplete || (log && log.completed)
+        canComplete: canComplete || (log && log.completed),
       };
     });
 
@@ -95,12 +168,12 @@ exports.getTodayActivities = async (req, res) => {
       canComplete,
       timeRemaining: {
         hours: 23 - currentHour,
-        minutes: 59 - currentMinute
-      }
+        minutes: 59 - currentMinute,
+      },
     });
   } catch (error) {
-    console.error('Get today activities error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get today activities error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -110,49 +183,51 @@ exports.getTodayActivities = async (req, res) => {
 exports.createCustomActivity = async (req, res) => {
   try {
     const { name, icon, startTime, endTime } = req.body;
-    
+
     if (!name || name.trim().length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Activity name is required' 
+      return res.status(400).json({
+        success: false,
+        message: "Activity name is required",
       });
     }
 
     const existingActivity = await Activity.findOne({
       where: {
         userId: req.user.id,
-        name: { [Op.iLike]: name.trim() }
-      }
+        name: { [Op.iLike]: name.trim() },
+      },
     });
 
     if (existingActivity) {
       return res.status(400).json({
         success: false,
-        message: 'You already have this activity'
+        message: "You already have this activity",
       });
     }
 
-    const maxOrder = await Activity.max('order', { where: { userId: req.user.id } });
+    const maxOrder = await Activity.max("order", {
+      where: { userId: req.user.id },
+    });
     const order = (maxOrder || 0) + 1;
 
     const activity = await Activity.create({
       name: name.trim(),
-      icon: icon || '📋',
+      icon: icon || "📋",
       userId: req.user.id,
       isDefault: false,
       startTime: startTime || null,
       endTime: endTime || null,
-      order: order
+      order: order,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Activity created successfully',
-      activity
+      message: "Activity created successfully",
+      activity,
     });
   } catch (error) {
-    console.error('Create custom activity error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Create custom activity error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -165,13 +240,13 @@ exports.updateActivity = async (req, res) => {
     const { name, icon, startTime, endTime } = req.body;
 
     const activity = await Activity.findOne({
-      where: { id, userId: req.user.id }
+      where: { id, userId: req.user.id },
     });
 
     if (!activity) {
       return res.status(404).json({
         success: false,
-        message: 'Activity not found'
+        message: "Activity not found",
       });
     }
 
@@ -179,17 +254,17 @@ exports.updateActivity = async (req, res) => {
       name: name || activity.name,
       icon: icon || activity.icon,
       startTime: startTime !== undefined ? startTime : activity.startTime,
-      endTime: endTime !== undefined ? endTime : activity.endTime
+      endTime: endTime !== undefined ? endTime : activity.endTime,
     });
 
     res.json({
       success: true,
-      message: 'Activity updated successfully',
-      activity
+      message: "Activity updated successfully",
+      activity,
     });
   } catch (error) {
-    console.error('Update activity error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Update activity error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -199,13 +274,13 @@ exports.deleteActivity = async (req, res) => {
     const { id } = req.params;
 
     const activity = await Activity.findOne({
-      where: { id, userId: req.user.id }
+      where: { id, userId: req.user.id },
     });
 
     if (!activity) {
       return res.status(404).json({
         success: false,
-        message: 'Activity not found'
+        message: "Activity not found",
       });
     }
 
@@ -213,8 +288,8 @@ exports.deleteActivity = async (req, res) => {
     await DailyLog.destroy({
       where: {
         userId: req.user.id,
-        activityId: id
-      }
+        activityId: id,
+      },
     });
 
     // Then delete the activity
@@ -222,11 +297,11 @@ exports.deleteActivity = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Activity and its logs deleted successfully'
+      message: "Activity and its logs deleted successfully",
     });
   } catch (error) {
-    console.error('Delete activity error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Delete activity error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -239,52 +314,54 @@ exports.deleteAllDefaultActivities = async (req, res) => {
     const defaultActivities = await Activity.findAll({
       where: {
         userId: userId,
-        isDefault: true
-      }
+        isDefault: true,
+      },
     });
 
     if (defaultActivities.length === 0) {
       return res.json({
         success: true,
-        message: 'No default activities to delete',
-        deletedCount: 0
+        message: "No default activities to delete",
+        deletedCount: 0,
       });
     }
 
-    const activityIds = defaultActivities.map(a => a.id);
+    const activityIds = defaultActivities.map((a) => a.id);
 
     // Delete all logs associated with these activities
     const logsDeleted = await DailyLog.destroy({
       where: {
         userId: userId,
         activityId: {
-          [Op.in]: activityIds
-        }
-      }
+          [Op.in]: activityIds,
+        },
+      },
     });
 
-    console.log(`Deleted ${logsDeleted} logs for ${defaultActivities.length} default activities`);
+    console.log(
+      `Deleted ${logsDeleted} logs for ${defaultActivities.length} default activities`,
+    );
 
     // Delete the activities
     const deleted = await Activity.destroy({
       where: {
         userId: userId,
-        isDefault: true
-      }
+        isDefault: true,
+      },
     });
 
     res.json({
       success: true,
       message: `${deleted} default activities deleted successfully (${logsDeleted} logs removed)`,
       deletedCount: deleted,
-      logsDeleted: logsDeleted
+      logsDeleted: logsDeleted,
     });
   } catch (error) {
-    console.error('Delete all default activities error:', error.message);
-    console.error('Error stack:', error.stack);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error: ' + error.message 
+    console.error("Delete all default activities error:", error.message);
+    console.error("Error stack:", error.stack);
+    res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message,
     });
   }
 };
@@ -295,53 +372,55 @@ exports.deleteAllDefaultActivities = async (req, res) => {
 exports.toggleActivity = async (req, res) => {
   try {
     const { activityId, date, week, day, note } = req.body;
-    
+
     const activity = await Activity.findOne({
-      where: { id: activityId, userId: req.user.id }
+      where: { id: activityId, userId: req.user.id },
     });
 
     if (!activity) {
-      return res.status(404).json({ message: 'Activity not found' });
+      return res.status(404).json({ message: "Activity not found" });
     }
 
     const existingLog = await DailyLog.findOne({
       where: {
         userId: req.user.id,
         activityId,
-        date: date || new Date().toISOString().split('T')[0]
-      }
+        date: date || new Date().toISOString().split("T")[0],
+      },
     });
 
     if (existingLog) {
-      await existingLog.update({ 
+      await existingLog.update({
         completed: !existingLog.completed,
-        note: note || existingLog.note
+        note: note || existingLog.note,
       });
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         log: existingLog,
-        message: existingLog.completed ? 'Activity completed!' : 'Activity uncompleted'
+        message: existingLog.completed
+          ? "Activity completed!"
+          : "Activity uncompleted",
       });
     }
 
     const log = await DailyLog.create({
       userId: req.user.id,
       activityId,
-      date: date || new Date().toISOString().split('T')[0],
+      date: date || new Date().toISOString().split("T")[0],
       week: week || 1,
       day: day || 1,
       completed: true,
-      note: note || ''
+      note: note || "",
     });
 
-    res.status(201).json({ 
-      success: true, 
+    res.status(201).json({
+      success: true,
       log,
-      message: 'Activity completed!'
+      message: "Activity completed!",
     });
   } catch (error) {
-    console.error('Toggle activity error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Toggle activity error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -351,35 +430,37 @@ exports.toggleActivity = async (req, res) => {
 exports.getDailyProgress = async (req, res) => {
   try {
     const { date } = req.query;
-    const queryDate = date || new Date().toISOString().split('T')[0];
+    const queryDate = date || new Date().toISOString().split("T")[0];
 
     const logs = await DailyLog.findAll({
       where: {
         userId: req.user.id,
-        date: queryDate
+        date: queryDate,
       },
-      include: [{
-        model: Activity,
-        attributes: ['name', 'icon']
-      }]
+      include: [
+        {
+          model: Activity,
+          attributes: ["name", "icon"],
+        },
+      ],
     });
 
     const totalActivities = await Activity.count({
-      where: { userId: req.user.id }
+      where: { userId: req.user.id },
     });
 
-    const completedCount = logs.filter(log => log.completed).length;
+    const completedCount = logs.filter((log) => log.completed).length;
 
     res.json({
       success: true,
       date: queryDate,
       total: totalActivities,
       completed: completedCount,
-      logs
+      logs,
     });
   } catch (error) {
-    console.error('Get daily progress error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get daily progress error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -389,11 +470,11 @@ exports.getDailyProgress = async (req, res) => {
 exports.getWeeklyProgress = async (req, res) => {
   try {
     const { week = 1 } = req.query;
-    
+
     const today = new Date();
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - ((week - 1) * 7));
-    
+    startDate.setDate(today.getDate() - (week - 1) * 7);
+
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 6);
 
@@ -403,40 +484,43 @@ exports.getWeeklyProgress = async (req, res) => {
         week: parseInt(week),
         date: {
           [Op.between]: [
-            startDate.toISOString().split('T')[0],
-            endDate.toISOString().split('T')[0]
-          ]
-        }
+            startDate.toISOString().split("T")[0],
+            endDate.toISOString().split("T")[0],
+          ],
+        },
       },
-      include: [{
-        model: Activity,
-        attributes: ['name', 'icon']
-      }]
+      include: [
+        {
+          model: Activity,
+          attributes: ["name", "icon"],
+        },
+      ],
     });
 
     const days = {};
     for (let i = 1; i <= 7; i++) {
       const dayDate = new Date(startDate);
       dayDate.setDate(startDate.getDate() + i - 1);
-      const dateStr = dayDate.toISOString().split('T')[0];
+      const dateStr = dayDate.toISOString().split("T")[0];
       days[i] = {
         date: dateStr,
-        completed: logs.filter(log => log.date === dateStr && log.completed).length,
-        total: 10
+        completed: logs.filter((log) => log.date === dateStr && log.completed)
+          .length,
+        total: 10,
       };
     }
 
     res.json({
       success: true,
       week: parseInt(week),
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
       days,
-      logs
+      logs,
     });
   } catch (error) {
-    console.error('Get weekly progress error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get weekly progress error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -458,32 +542,34 @@ exports.getMonthlyProgress = async (req, res) => {
         userId: req.user.id,
         date: {
           [Op.between]: [
-            startDate.toISOString().split('T')[0],
-            endDate.toISOString().split('T')[0]
-          ]
-        }
+            startDate.toISOString().split("T")[0],
+            endDate.toISOString().split("T")[0],
+          ],
+        },
       },
-      include: [{
-        model: Activity,
-        attributes: ['name', 'icon']
-      }]
+      include: [
+        {
+          model: Activity,
+          attributes: ["name", "icon"],
+        },
+      ],
     });
 
     const days = {};
     for (let i = 1; i <= endDate.getDate(); i++) {
       const dateObj = new Date(targetYear, targetMonth - 1, i);
-      const dateStr = dateObj.toISOString().split('T')[0];
-      const dayLogs = logs.filter(log => log.date === dateStr);
+      const dateStr = dateObj.toISOString().split("T")[0];
+      const dayLogs = logs.filter((log) => log.date === dateStr);
       days[i] = {
         date: dateStr,
-        completed: dayLogs.filter(log => log.completed).length,
+        completed: dayLogs.filter((log) => log.completed).length,
         total: 10,
-        dayOfWeek: dateObj.getDay()
+        dayOfWeek: dateObj.getDay(),
       };
     }
 
     const totalDays = Object.keys(days).length;
-    const totalCompleted = logs.filter(log => log.completed).length;
+    const totalCompleted = logs.filter((log) => log.completed).length;
     const totalActivities = totalDays * 10;
 
     res.json({
@@ -493,12 +579,15 @@ exports.getMonthlyProgress = async (req, res) => {
       totalDays,
       totalCompleted,
       totalActivities,
-      completionRate: totalActivities > 0 ? Math.round((totalCompleted / totalActivities) * 100) : 0,
-      days
+      completionRate:
+        totalActivities > 0
+          ? Math.round((totalCompleted / totalActivities) * 100)
+          : 0,
+      days,
     });
   } catch (error) {
-    console.error('Get monthly progress error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get monthly progress error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -517,24 +606,24 @@ exports.getStats = async (req, res) => {
         userId,
         date: {
           [Op.between]: [
-            startOfMonth.toISOString().split('T')[0],
-            endOfMonth.toISOString().split('T')[0]
-          ]
-        }
+            startOfMonth.toISOString().split("T")[0],
+            endOfMonth.toISOString().split("T")[0],
+          ],
+        },
       },
-      attributes: ['date', 'completed']
+      attributes: ["date", "completed"],
     });
 
     const activities = await Activity.findAll({
       where: { userId },
-      attributes: ['id', 'name', 'icon']
+      attributes: ["id", "name", "icon"],
     });
 
     const totalDays = endOfMonth.getDate();
     const daysWithData = new Set();
     const completedDays = new Set();
 
-    logs.forEach(log => {
+    logs.forEach((log) => {
       daysWithData.add(log.date);
       if (log.completed) completedDays.add(log.date);
     });
@@ -545,27 +634,26 @@ exports.getStats = async (req, res) => {
 
     for (let i = 0; i < totalDays; i++) {
       const date = new Date(today.getFullYear(), today.getMonth(), i + 1);
-      const dateStr = date.toISOString().split('T')[0];
-      
+      const dateStr = date.toISOString().split("T")[0];
+
       if (date > new Date()) break;
 
       const isCompleted = completedDays.has(dateStr);
-      
+
       if (isCompleted) {
         tempStreak++;
         bestStreak = Math.max(bestStreak, tempStreak);
       } else {
         tempStreak = 0;
       }
-      
-      if (dateStr === today.toISOString().split('T')[0]) {
+
+      if (dateStr === today.toISOString().split("T")[0]) {
         currentStreak = tempStreak;
       }
     }
 
-    const completionRate = totalDays > 0 
-      ? Math.round((completedDays.size / totalDays) * 100) 
-      : 0;
+    const completionRate =
+      totalDays > 0 ? Math.round((completedDays.size / totalDays) * 100) : 0;
 
     res.json({
       success: true,
@@ -576,12 +664,12 @@ exports.getStats = async (req, res) => {
         currentStreak,
         bestStreak,
         completionRate,
-        activitiesCount: activities.length
-      }
+        activitiesCount: activities.length,
+      },
     });
   } catch (error) {
-    console.error('Get stats error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get stats error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -592,10 +680,10 @@ exports.getHeatmap = async (req, res) => {
   try {
     const userId = req.user.id;
     const { year, month } = req.query;
-    
+
     const targetYear = year ? parseInt(year) : new Date().getFullYear();
     const targetMonth = month ? parseInt(month) : new Date().getMonth() + 1;
-    
+
     const startDate = new Date(targetYear, targetMonth - 1, 1);
     const endDate = new Date(targetYear, targetMonth, 0);
     const daysInMonth = endDate.getDate();
@@ -605,12 +693,12 @@ exports.getHeatmap = async (req, res) => {
         userId,
         date: {
           [Op.between]: [
-            startDate.toISOString().split('T')[0],
-            endDate.toISOString().split('T')[0]
-          ]
-        }
+            startDate.toISOString().split("T")[0],
+            endDate.toISOString().split("T")[0],
+          ],
+        },
       },
-      attributes: ['date', 'completed']
+      attributes: ["date", "completed"],
     });
 
     const activities = await Activity.count({ where: { userId } });
@@ -619,17 +707,20 @@ exports.getHeatmap = async (req, res) => {
     const heatmapData = [];
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(targetYear, targetMonth - 1, i);
-      const dateStr = date.toISOString().split('T')[0];
-      const dayLogs = logs.filter(log => log.date === dateStr);
-      const completed = dayLogs.filter(log => log.completed).length;
-      
+      const dateStr = date.toISOString().split("T")[0];
+      const dayLogs = logs.filter((log) => log.date === dateStr);
+      const completed = dayLogs.filter((log) => log.completed).length;
+
       heatmapData.push({
         day: i,
         date: dateStr,
         completed,
         total: totalActivities,
-        percentage: totalActivities > 0 ? Math.round((completed / totalActivities) * 100) : 0,
-        dayOfWeek: date.getDay()
+        percentage:
+          totalActivities > 0
+            ? Math.round((completed / totalActivities) * 100)
+            : 0,
+        dayOfWeek: date.getDay(),
       });
     }
 
@@ -638,11 +729,11 @@ exports.getHeatmap = async (req, res) => {
       heatmap: heatmapData,
       month: targetMonth,
       year: targetYear,
-      daysInMonth
+      daysInMonth,
     });
   } catch (error) {
-    console.error('Get heatmap error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get heatmap error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -664,12 +755,12 @@ exports.getWeeklyTrend = async (req, res) => {
         userId,
         date: {
           [Op.between]: [
-            startDate.toISOString().split('T')[0],
-            endDate.toISOString().split('T')[0]
-          ]
-        }
+            startDate.toISOString().split("T")[0],
+            endDate.toISOString().split("T")[0],
+          ],
+        },
       },
-      attributes: ['date', 'completed']
+      attributes: ["date", "completed"],
     });
 
     const activities = await Activity.count({ where: { userId } });
@@ -679,27 +770,30 @@ exports.getWeeklyTrend = async (req, res) => {
     for (let i = 0; i <= limit; i++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const dayLogs = logs.filter(log => log.date === dateStr);
-      const completed = dayLogs.filter(log => log.completed).length;
-      
+      const dateStr = date.toISOString().split("T")[0];
+
+      const dayLogs = logs.filter((log) => log.date === dateStr);
+      const completed = dayLogs.filter((log) => log.completed).length;
+
       trendData[dateStr] = {
         date: dateStr,
         completed,
         total: totalActivities,
-        percentage: totalActivities > 0 ? Math.round((completed / totalActivities) * 100) : 0
+        percentage:
+          totalActivities > 0
+            ? Math.round((completed / totalActivities) * 100)
+            : 0,
       };
     }
 
     res.json({
       success: true,
       trend: Object.values(trendData),
-      limit
+      limit,
     });
   } catch (error) {
-    console.error('Get weekly trend error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get weekly trend error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -712,48 +806,51 @@ exports.getActivityInsights = async (req, res) => {
 
     const activities = await Activity.findAll({
       where: { userId },
-      attributes: ['id', 'name', 'icon', 'isDefault']
+      attributes: ["id", "name", "icon", "isDefault"],
     });
 
     const logs = await DailyLog.findAll({
       where: {
         userId,
         date: {
-          [Op.gte]: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().split('T')[0]
-        }
+          [Op.gte]: new Date(new Date().setMonth(new Date().getMonth() - 3))
+            .toISOString()
+            .split("T")[0],
+        },
       },
-      attributes: ['activityId', 'completed']
+      attributes: ["activityId", "completed"],
     });
 
-    const insights = activities.map(activity => {
-      const activityLogs = logs.filter(log => log.activityId === activity.id);
+    const insights = activities.map((activity) => {
+      const activityLogs = logs.filter((log) => log.activityId === activity.id);
       const total = activityLogs.length;
-      const completed = activityLogs.filter(log => log.completed).length;
+      const completed = activityLogs.filter((log) => log.completed).length;
       const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-      
+
       return {
         ...activity.toJSON(),
         total,
         completed,
-        percentage
+        percentage,
       };
     });
 
     const sorted = insights.sort((a, b) => b.percentage - a.percentage);
-    
+
     const mostConsistent = sorted.length > 0 ? sorted[0] : null;
-    const needsImprovement = sorted.length > 0 ? sorted[sorted.length - 1] : null;
+    const needsImprovement =
+      sorted.length > 0 ? sorted[sorted.length - 1] : null;
 
     res.json({
       success: true,
       insights: sorted,
       mostConsistent,
       needsImprovement,
-      totalActivities: activities.length
+      totalActivities: activities.length,
     });
   } catch (error) {
-    console.error('Get activity insights error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get activity insights error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -772,13 +869,13 @@ exports.getMilestones = async (req, res) => {
         userId,
         date: {
           [Op.between]: [
-            startOfMonth.toISOString().split('T')[0],
-            endOfMonth.toISOString().split('T')[0]
-          ]
-        }
+            startOfMonth.toISOString().split("T")[0],
+            endOfMonth.toISOString().split("T")[0],
+          ],
+        },
       },
-      attributes: ['date', 'completed'],
-      order: [['date', 'ASC']]
+      attributes: ["date", "completed"],
+      order: [["date", "ASC"]],
     });
 
     const activities = await Activity.count({ where: { userId } });
@@ -787,13 +884,13 @@ exports.getMilestones = async (req, res) => {
     let currentStreak = 0;
     let bestStreak = 0;
     const completedDays = [];
-    
+
     for (let i = 0; i < endOfMonth.getDate(); i++) {
       const date = new Date(today.getFullYear(), today.getMonth(), i + 1);
-      const dateStr = date.toISOString().split('T')[0];
-      const dayLogs = logs.filter(log => log.date === dateStr);
-      const completed = dayLogs.filter(log => log.completed).length;
-      
+      const dateStr = date.toISOString().split("T")[0];
+      const dayLogs = logs.filter((log) => log.date === dateStr);
+      const completed = dayLogs.filter((log) => log.completed).length;
+
       if (completed === totalActivities) {
         completedDays.push(dateStr);
         currentStreak++;
@@ -805,42 +902,46 @@ exports.getMilestones = async (req, res) => {
 
     const milestones = [
       {
-        id: 'first_complete',
-        title: 'First Complete Day',
-        description: 'Completed all activities in a single day',
-        icon: '🌟',
+        id: "first_complete",
+        title: "First Complete Day",
+        description: "Completed all activities in a single day",
+        icon: "🌟",
         achieved: completedDays.length > 0,
-        date: completedDays.length > 0 ? completedDays[0] : null
+        date: completedDays.length > 0 ? completedDays[0] : null,
       },
       {
-        id: 'week_streak',
-        title: 'Week Warrior',
-        description: 'Completed 7 days in a row',
-        icon: '🔥',
+        id: "week_streak",
+        title: "Week Warrior",
+        description: "Completed 7 days in a row",
+        icon: "🔥",
         achieved: bestStreak >= 7,
-        date: null
+        date: null,
       },
       {
-        id: 'month_master',
-        title: 'Month Master',
-        description: 'Completed 30 days in a month',
-        icon: '🏆',
+        id: "month_master",
+        title: "Month Master",
+        description: "Completed 30 days in a month",
+        icon: "🏆",
         achieved: completedDays.length >= 30,
-        date: null
+        date: null,
       },
       {
-        id: 'perfect_week',
-        title: 'Perfect Week',
-        description: 'All activities completed for 7 consecutive days',
-        icon: '💯',
+        id: "perfect_week",
+        title: "Perfect Week",
+        description: "All activities completed for 7 consecutive days",
+        icon: "💯",
         achieved: bestStreak >= 7,
-        date: null
-      }
+        date: null,
+      },
     ];
 
-    const nextMilestone = bestStreak < 7 
-      ? { title: `${7 - bestStreak} more days to Week Warrior`, days: 7 - bestStreak }
-      : null;
+    const nextMilestone =
+      bestStreak < 7
+        ? {
+            title: `${7 - bestStreak} more days to Week Warrior`,
+            days: 7 - bestStreak,
+          }
+        : null;
 
     res.json({
       success: true,
@@ -848,11 +949,11 @@ exports.getMilestones = async (req, res) => {
       nextMilestone,
       currentStreak,
       bestStreak,
-      completedDays: completedDays.length
+      completedDays: completedDays.length,
     });
   } catch (error) {
-    console.error('Get milestones error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Get milestones error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -889,9 +990,10 @@ exports.bulkCreateActivities = async (req, res) => {
     }
 
     // ---------- BUILD THE NEW LIST ----------
-    const maxOrder = mode === "replace"
-      ? 0
-      : await Activity.max("order", { where: { userId: req.user.id } });
+    const maxOrder =
+      mode === "replace"
+        ? 0
+        : await Activity.max("order", { where: { userId: req.user.id } });
 
     let nextOrder = (maxOrder || 0) + 1;
 
@@ -935,9 +1037,10 @@ exports.bulkCreateActivities = async (req, res) => {
     if (toInsert.length === 0) {
       return res.status(400).json({
         success: false,
-        message: mode === "replace"
-          ? "No valid activities to import"
-          : "All activities were skipped (duplicates)",
+        message:
+          mode === "replace"
+            ? "No valid activities to import"
+            : "All activities were skipped (duplicates)",
         skipped,
       });
     }
