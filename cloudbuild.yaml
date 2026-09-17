@@ -15,3 +15,6 @@ steps:
 
 images:
   - "asia-south1-docker.pkg.dev/gcp-learning-506406/tracker-images/tracker-backend:$COMMIT_SHA"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
